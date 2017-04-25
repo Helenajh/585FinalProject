@@ -70,7 +70,8 @@ location. On overall average of sale price in story county in 2016 was \$180K - 
   \label{fig:price63}
 \end{figure}
 
-<!-- ## Sale time distribution  -->
+<!-- ## Sale time distribution   -->
+<!-- ## House type distribution  -->
 
 # How to use the shinyApp
 * Download the folder `AmesHoursePrice2016`

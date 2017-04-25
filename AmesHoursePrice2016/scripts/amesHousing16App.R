@@ -103,8 +103,12 @@ navbarPage("2016 Ames Iowa House Sale",
                  sidebarLayout(
                     sidebarPanel(
                         selectInput("style", label = h3("Select Housing Style"),
-                                    choices = unique(amesHousingDat$Style),
-                                    selected = "Two story")
+                                    choices = unique(amesHousingDat$Occupancy),
+                                    selected = "Condominium unit"),
+                        selectInput("Bedrooms", 
+                                    label = h3("Select number of bedrooms"),
+                                    choices = unique(amesHousingDat$Bedrooms),
+                                    selected = 2)
                       ),
                       mainPanel(
                           plotlyOutput("salePriceAreaBed")
@@ -200,19 +204,24 @@ server <- function(input, output) {
   
   ## tab2: sale price vs total living area 
   ames_tab2_subset <- reactive(
-    amesHousingDat %>% filter(Style == input$style)
+    amesHousingDat %>% filter(Occupancy == input$style, Bedrooms == input$Bedrooms)
   )
   
   output$salePriceAreaBed <- renderPlotly({
     ames_tab2_subset() %>% 
       ggplot(aes(y = Sale.Price/1000, x = Total.Living.Area, 
-                 colour = as.factor(Bedrooms))) + 
+                 colour = as.factor(Style),
+                 alpha = 0.5,
+                 size = as.factor(ceiling(Total.Living.Area/1000))
+             ),
+             ) + 
       geom_point() + 
       theme_classic() + 
       xlab("Total Living Area") + 
       ylab("\n Sale Price(k) \n") + 
-      scale_colour_discrete(name  = "Bedroom") + 
-      theme(legend.position = "bottom") 
+     # scale_colour_discrete(name  = "Bedroom") + 
+      theme(legend.position = "none")
+  #    theme(legend.position = "bottom") 
   })
   
   output$salePriceClass <- renderPlotly({
@@ -257,6 +266,7 @@ server <- function(input, output) {
                      paste0("<b>Price: </b>",  "$", d$Sale.Price/1000), 'K<br/>',
                      "<b>Bedrooms:</b>", d$Bedrooms, "<br/>",
                      "<b>Address:</b>", d$Address, "<br/>",
+                     "<b>Built Year:</b>", d$Year.Built, "<br/>",
                      paste0("<b><a href='",d$houseInfoURL, "'>House website</a></b>"),
                      "<img src = ", d$hourseImgURL, ">"
                      )
