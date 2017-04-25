@@ -1,0 +1,79 @@
+---
+title: "Final Project Report"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, error = FALSE, 
+                      message = FALSE)
+```
+
+```{r packages}
+library(xtable)
+library(tidyverse)
+library(leaflet)
+```
+# Data description  
+## Data processing
+Story Country,  IA/City of Ames data was downloaded from the [Beacon website](https://beacon.schneidercorp.com/Application.aspx?AppID=165&LayerID=2145&PageTypeID=2&PageID=1279&KeyValue=0916402205) by setting `Sale Date` to be 18 month and filtering `Bedrooms` 
+from 0 upto 8 one by one. Then we processed those datasets as follows:
+
+  1. Got rid of all records before 2016 January, since we were more interested in the housing sale in 2016.
+  2. Created a new feature `house age` defined by using 2016 subtracting the year of house was built and then grouped this feature `house age`  into 13 groups. 
+  3. Add the longitudinal and latitudinal information using Google API into the data set.
+
+After the above processing, there are 952 observations left to the following visualization. 
+
+## Data variable description 
+
+```{r, results='asis'}
+datVar <- data.frame(Var = c("Parcel ID", "Address", "Sale Price", "Sale Date", "Sale Condition", 
+                             "Assessed Value", "Parcel Type", "Year Built","Total Living Area",
+                             "Finished bsmt Area", "Lot Area", "Bedrooms", "Central Air",
+                             "Fireplaces", "Occupancy", "Style", "Neighborhood","INSTRUMENTNUMBER" ),
+                     des = c("Unique ID for each house", "House Address", "House Price in dollars", 
+                             "Sale Data", "Sale Condition", "Assessed price", 
+                             "House type", "House built", "Living area", "Finished basement area",
+                             "Lot area", "Number of bedrooms", "Weather the house has central Air",
+                            "Number of fireplaces", "Building Type", "Style", "Neighborhood near the house",
+                             "Deed book data and page"
+                             ),
+                     range = c(NA, NA, "$29 ~ $830K", "1/1/16 - 12/1/16", 
+                               "6 levels characters: Abnorml, AdjLand, Alloca, Family, Normal, Partial",
+                               "$300 ~ $707.3K", 
+                               "4 types characters: vacant land,  dwelling and interior lot, condominium unit building and interior lot, single-family dwelling", NA, "Numeric: 0 - 4615F", "Numeric: 0 - 2114F", 
+                               "Numeric: 0 - 157600F", "Numeric: 0-8", 
+                               "2 levels characters: yea, no, no data", "0 - 3",
+                               "7 levels characters: single family detached(includes detached townhouses; 
+                               condominium unit; townhouse:end unit; townhouse:inner unit; two-family 
+                               conversion:originally built as one-family dwelling; duplex; no data",
+                               "9 levels characters: one and one-half story: 2nd level finished; one story; split foyer
+                               two story; split level; one and one-half story: 2nd level unifnished two 
+                               and one half story: 3rd level unfinished; two and one-half story:3rd 
+                               level finished; no data", "34 levels characters", "Numeric numbers"
+                               ))
+datVar.xtable <- xtable(datVar, caption = "Variables description in the dataset")
+align(datVar.xtable) <- "p{0.1\\textwidth}|p{0.25\\textwidth}|p{0.3\\textwidth}|p{0.45\\textwidth}|"
+colnames(datVar.xtable) <- c("Variables", "Description", "Range")
+print(datVar.xtable, include.rownames = F, comment = FALSE, floating = FALSE)
+```
+
+# House Map Location
+## Sale price distribution
+In this section, we were interested how the house sale price changes at different 
+location. On overall average of sale price in story county in 2016 was \$180K - \$190K. It located near Grand Avenue, 13 street and 24 street and near Ontario street as well. We noticed that the highest house sale on average was tent to centered near the northridge heights park area in 2016 (Fig. \ref{fig:price63}). 
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[height=3in]{./figs/price63.png}
+  \caption{House sale price in 2016. Red dots represents the price larger than \$300K while the purple dots denotes the average price around \$200K in 2016 in story county, IA.}
+  \label{fig:price63}
+\end{figure}
+
+<!-- ## Sale time distribution  -->
+
+# How to use the shinyApp
+* Download the folder `AmesHoursePrice2016`
+* Open `AmesHousePrice2016.Rproj`
+* Open the shiny app file in scripts folder called `amesHousing16App.R`
+
