@@ -141,17 +141,18 @@ navbarPage("2016 Ames Iowa House Sale",
    ## tab4: Housing Sales vs Location
    tabPanel("Sales vs Location",
             selectInput("priceRange", 
-                        label = h4("Select Housing Price Range"),
-                        choices = list(
-                          "<$100K" = "1",
-                          "$100K ~ $150K" = "2",
-                          "$150K ~ $200K" = "3",
-                          "$200K ~ $250K" = "4",
-                          "$250K ~ $300K" = "5",
-                          ">$300K" = "6"
-                        ),
+                        label = h4("Select Housing Neighbordhood"),
+                        # choices = list(
+                        #   "<$100K" = "1",
+                        #   "$100K ~ $150K" = "2",
+                        #   "$150K ~ $200K" = "3",
+                        #   "$200K ~ $250K" = "4",
+                        #   "$250K ~ $300K" = "5",
+                        #   ">$300K" = "6"
+                        # ),
+                        choices = unique(amesHousingDat$Neighborhood),
                         multiple = TRUE,
-                        selected = "2"),
+                        selected = "HaydnLk"),
             leafletOutput("houseMap", height = "500px")
             
  #  ),
@@ -331,7 +332,8 @@ server <- function(input, output) {
   ## Show a popup at the given location 
   
   subPriceRangeAmesData <- reactive({
-   df <- amesHousingDat %>% dplyr::filter(priceRange %in% as.character(input$priceRange)) 
+   df <- amesHousingDat %>% #dplyr::filter(priceRange %in% as.character(input$priceRange)) 
+     dplyr::filter(Neighborhood %in% as.character(input$priceRange)) 
    return(df)
   })
   
@@ -341,6 +343,7 @@ server <- function(input, output) {
                      "<b>Bedrooms:</b>", d$Bedrooms, "<br/>",
                      "<b>Address:</b>", d$Address, "<br/>",
                      "<b>Built Year:</b>", d$Year.Built, "<br/>",
+                     "<b>Neighborhood:</b>", d$Neighborhood, "<br/>",
                      paste0("<b><a href='",d$houseInfoURL, "'>House website</a></b>"),
                      "<img src = ", d$hourseImgURL, ">"
                      )
@@ -352,11 +355,12 @@ server <- function(input, output) {
       addTiles() %>%
       fitBounds(
         ~min(long), ~min(lat), ~max(long), ~max(lat)
-      ) %>%
-      addLegend("bottomleft", 
-                colors = priceRangeColorsVec, labels = priceRangeVec, 
-                title = "House Sale Price",
-                opacity = 1)
+      )
+      # ) %>%
+      # addLegend("bottomleft", 
+      #           colors = priceRangeColorsVec, labels = priceRangeVec, 
+      #           title = "House Sale Price",
+      #           opacity = 1)
     #%>%
     #  fitBounds(-93.69, 41.98, -93.65, 42.29)
   })
@@ -372,7 +376,8 @@ server <- function(input, output) {
         clearGroup('A') %>% 
         addCircleMarkers( group = 'A',
                           lng = ~long, lat = ~lat,
-                          color = ~priceRangeColor,
+                         # color = ~priceRangeColor,
+                          color = ~Neighborhood,
                           radius = 3,  fillOpacity = 0.7, 
                           popup = popupContent(subPriceRangeAmesData()))  
     }
