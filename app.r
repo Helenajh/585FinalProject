@@ -71,6 +71,10 @@ server <- function(input, output) {
 # Run the application 
 shinyApp(ui = ui, server = server)
 
+# color : bedroom 
+## shape: style(fixed)
+### label: Sale_price, Total.Living.Area, Year built, Finished basement 
+
 
 
 
