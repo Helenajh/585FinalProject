@@ -1,4 +1,5 @@
 ## working directory as project directory 
+
 library(shiny)
 library(tidyverse)
 library(leaflet)
@@ -7,6 +8,8 @@ library(plotly)
 ##------------------------------------------------------
 ## reading ames housing 16 data and some preprocessing 
 ##------------------------------------------------------
+
+
 amesHousingDat <- read.csv("../data/StoryCountyIA-NEW_house-LatLong.csv", 
                            stringsAsFactors = F)
 
@@ -79,6 +82,28 @@ icons <- awesomeIcons(
   markerColor = amesHousingDat$priceRangeColor
 )
 
+
+## add variable "Are" 
+northIdx <- which(amesHousingDat$Neighborhood %in% c("HaydnLk", "Somerst", "N Ames", 
+                                                     "NridgHt", "StoneBr", "Blmngtn", 
+                                                     "IOCondo", "Veenker", "Greens", 
+                                                     "Gilbert", "NW Ames", "Br'Dale", 
+                                                     "NPkVill", "NoRidge"))
+westIdx <- which(amesHousingDat$Neighborhood %in% c("SawyerW", "ClearCr", "CollgCr", 
+                                                    "DakotaR", "Edwards", "Crawfor", 
+                                                    "WllwCr1", "S&W ISU", "Blueste", 
+                                                    "Sawyer", "MsCondo", "Landmrk", 
+                                                    "WllwCr2"))
+southIdx <- which(amesHousingDat$Neighborhood %in% c("GrnHill", "Timber", "Mitchel", 
+                                                     "MeadowV"))
+centerIdx <- which(amesHousingDat$Neighborhood %in% c("OldTown", "IDOT&RR", "BrkSide"))
+
+amesHousingDat$Area <- rep("", nrow(amesHousingDat))
+amesHousingDat$Area[northIdx]  <- "North"
+amesHousingDat$Area[westIdx]   <- "West"
+amesHousingDat$Area[southIdx]  <- "South"
+amesHousingDat$Area[centerIdx] <- "Center"
+
 ##------------------------------------------------------
 ## UI 
 ##------------------------------------------------------
@@ -110,22 +135,25 @@ navbarPage("2016 Ames Iowa House Sale",
   ),
   
     ## tab 3: House Sale History Search
-    tabPanel("House Sale History Search",
+    tabPanel("House Sales History Search",
              sidebarLayout(
                sidebarPanel(
+                 selectInput("Area", label = h3("Area"), 
+                             choices = unique(amesHousingDat$Area),multiple = TRUE,
+                             selected = "North"),
                  
-                 selectInput("Type", label = h3("Select Building Type"), 
-                             choices = unique(amesHousingDat$Occupancy),
+                 selectInput("Type", label = h3("Building Type"), 
+                             choices = unique(amesHousingDat$Occupancy),multiple = TRUE,
                              selected = "Single-family detached (includes detached townhouses)"),
                  
-                 checkboxGroupInput("Bedrooms", label = h3("Select number of bedrooms"), 
-                                    choices = list("1 bed(orange)" = 1, "2 beds (blue)" = 2, 
-                                                   "3 beds (red)" = 3,  "4 beds (green)" = 4, 
+                 checkboxGroupInput("Bedrooms", label = h3("Number of Bedrooms"), 
+                                    choices = list("1 bed(orange)" = 1, "2 beds (red)" = 2, 
+                                                   "3 beds (blue)" = 3,  "4 beds (green)" = 4, 
                                                    "5 beds (purple)" = 5, "6 beds (yellow)" = 6,
                                                    "7 beds (pink)" = 7, "8 beds (brown)" = 8),
                                     selected = 3), 
                  
-                 sliderInput("Year", label = h3("Select Year Built"), min = 1890, 
+                 sliderInput("Year", label = h3("Year Built"), min = 1890, 
                              max = 2016, value = c(1980,1995))
                ),
                
@@ -271,7 +299,7 @@ server <- function(input, output) {
   ##------------------------------------------------------
   ## tab3: House Sale History Search
   ##------------------------------------------------------
-  bedroomsColVec <- c( "orange",  "royalblue", "red", 
+  bedroomsColVec <- c( "orange",  "red", "royalblue",
                        "green3",  "purple",    "yellow1",
                         "pink",    "brown")
   bedroomsColVec <- setNames(bedroomsColVec, as.character(seq(1,8)))
@@ -285,6 +313,7 @@ server <- function(input, output) {
   
   ames_tab2_subset <- reactive(
     amesHousingDat %>% filter(Occupancy == input$Type, Bedrooms %in% c(input$Bedrooms), 
+                              Area %in% c(input$Area),
                               Year.Built > input$Year[1], Year.Built < input$Year[2])
   )
   
