@@ -119,3 +119,5 @@ new_house$lat <- getGeo[, 2]
 ## write data set 
 write.csv(new_house, file = "./data/StoryCountyIA-NEW_house-LatLong.csv",
           quote = F, row.names = F)
+
+

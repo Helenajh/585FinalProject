@@ -170,17 +170,16 @@ navbarPage("2016 Ames Iowa House Sale",
    tabPanel("Sales vs Location",
             selectInput("priceRange", 
                         label = h4("Select Housing Neighbordhood"),
-                        # choices = list(
-                        #   "<$100K" = "1",
-                        #   "$100K ~ $150K" = "2",
-                        #   "$150K ~ $200K" = "3",
-                        #   "$200K ~ $250K" = "4",
-                        #   "$250K ~ $300K" = "5",
-                        #   ">$300K" = "6"
-                        # ),
-                        choices = unique(amesHousingDat$Neighborhood),
+                        choices = list(
+                          "<$100K" = "1",
+                          "$100K ~ $150K" = "2",
+                          "$150K ~ $200K" = "3",
+                          "$200K ~ $250K" = "4",
+                          "$250K ~ $300K" = "5",
+                          ">$300K" = "6"
+                        ),
                         multiple = TRUE,
-                        selected = "HaydnLk"),
+                        selected = c("1", "2")),
             leafletOutput("houseMap", height = "500px")
             
  #  ),
@@ -244,26 +243,7 @@ server <- function(input, output) {
   ## tab2: Sales Overview
   ##------------------------------------------------------
   output$salePriceClass <- renderPlotly({
-    
-    # crosstalk::SharedData$new(amesHousingDat)   %>% 
-    #   plot_ly(x = ~Assessed.Value, y = ~Sale.Price,
-    #           # Hover text:
-    #           text = ~paste("Price: ", Sale.Price, '$<br>Year:', Year.Built),
-    #           color = ~class,
-    #           size = ~Sale.Price/400,
-    #           frame = ~Year.Built#,
-    #       #    interval = 0.00001
-    #   ) %>%
-    #   add_trace(type = "scatter", showlegend = T) %>%
-    #   layout(
-    # #    xaxis = list(range = c(1880, 2020)),
-    #     yaxis = list(range = c(0, 900000))) %>%
-    #   layout(xaxis = list(title = "Assessed Value"),
-    #          yaxis = list(title = "Sale Price")) 
-    # #%>% 
-    # #  highlight("plotly_hover")
-    # #  }
-    
+
     amesHousingDat %>% plot_ly(x = ~Year.Built, y = ~Sale.Price,
                           # Hover text:
                           text = ~paste("Price: ", Sale.Price, '$<br>Year:', Year.Built),
@@ -301,9 +281,9 @@ server <- function(input, output) {
   ##------------------------------------------------------
   bedroomsColVec <- c( "orange",  "red", "royalblue",
                        "green3",  "purple",    "yellow1",
-                        "pink",    "brown")
+                       "pink",    "brown")
   bedroomsColVec <- setNames(bedroomsColVec, as.character(seq(1,8)))
-
+  
   stypeShapeVec <- c(20, 0, 1, 2,3,4,5,6)
   stypeShapeVec <- setNames(stypeShapeVec, c("One story", "Two story", "Split foyer",
                                              "Split level","One and one-half story:  2nd level unfinished",
@@ -318,41 +298,23 @@ server <- function(input, output) {
   )
   
   output$salePriceAreaBed <- renderPlotly({
-    # g <- ames_tab2_subset() %>% 
-    #   ggplot(aes(y = Sale.Price/1000, x = Total.Living.Area, 
-    #              colour = as.factor(Bedrooms),
-    #              shape = factor(Style),
-    #              text = paste("Sale Price: ", Sale.Price/1000, 
-    #                           'K$<br>Total Living Area:', Total.Living.Area, 
-    #                           '<br>Year of Built:', Year.Built,
-    #                           '<br>Finished basement area:', Finished.Bsmt.Area)
-    #   ),                  alpha = 0.5
-    #   ) + 
-    #   scale_colour_manual(values = bedroomsColVec, guide = FALSE) + 
-    #   scale_shape_manual("Stype", values = stypeShapeVec) + 
-    #   geom_point() + 
-    #   theme_classic() + 
-    #   xlab("Total Living Area (sq ft)") + 
-    #    ylab("\n Sale Price(k) \n") + 
-    #    theme(legend.position = "bottom",legend.justification = c(0,0))
-    # ggplotly(g)  %>% layout(legend = list(x = 0, y = -50, orientation = 'h'),
-    #                         xaxis= list(showticklabels = FALSE))
-    # %>% layout(legend = list(orientation = 'h'))
+
     ames_tab2_subset() %>%  
-        plot_ly(x = ~Sale.Price/1000, y = ~Total.Living.Area,
-            # Hover text:
-                text = ~paste("Sale Price: ", Sale.Price/1000,
-                             'K$<br>Total Living Area:', Total.Living.Area,
-                              '<br>Year of Built:', Year.Built,
-                              '<br>Finished basement area:', Finished.Bsmt.Area)) %>%
+      plot_ly(x = ~Sale.Price/1000, y = ~Total.Living.Area,
+              # Hover text:
+              text = ~paste("Sale Price: ", Sale.Price/1000,
+                            'K$<br>Total Living Area:', Total.Living.Area,
+                            '<br>Year of Built:', Year.Built,
+                            '<br>Finished basement area:', Finished.Bsmt.Area)) %>%
       add_trace(type = "scatter", color = ~as.factor(Bedrooms), colors = bedroomsColVec, 
                 symbol = ~Style, symbols = stypeShapeVec) %>% 
       layout(# legend = list(orientation = 'h'),
-             xaxis = list(title = "Total Living Area (sq ft)"),
-             yaxis = list(title = "Sale Price(k)")
-            )
-
+        xaxis = list(title = "Total Living Area (sq ft)"),
+        yaxis = list(title = "Sale Price(k)")
+      )
+    
   })
+  
   
 
   ##------------------------------------------------------
@@ -361,8 +323,7 @@ server <- function(input, output) {
   ## Show a popup at the given location 
   
   subPriceRangeAmesData <- reactive({
-   df <- amesHousingDat %>% #dplyr::filter(priceRange %in% as.character(input$priceRange)) 
-     dplyr::filter(Neighborhood %in% as.character(input$priceRange)) 
+   df <- amesHousingDat %>% dplyr::filter(priceRange %in% as.character(input$priceRange)) 
    return(df)
   })
   
@@ -372,7 +333,7 @@ server <- function(input, output) {
                      "<b>Bedrooms:</b>", d$Bedrooms, "<br/>",
                      "<b>Address:</b>", d$Address, "<br/>",
                      "<b>Built Year:</b>", d$Year.Built, "<br/>",
-                     "<b>Neighborhood:</b>", d$Neighborhood, "<br/>",
+               #      "<b>Neighborhood:</b>", d$Neighborhood, "<br/>",
                      paste0("<b><a href='",d$houseInfoURL, "'>House website</a></b>"),
                      "<img src = ", d$hourseImgURL, ">"
                      )
@@ -384,12 +345,11 @@ server <- function(input, output) {
       addTiles() %>%
       fitBounds(
         ~min(long), ~min(lat), ~max(long), ~max(lat)
-      )
-      # ) %>%
-      # addLegend("bottomleft", 
-      #           colors = priceRangeColorsVec, labels = priceRangeVec, 
-      #           title = "House Sale Price",
-      #           opacity = 1)
+      ) %>%
+      addLegend("bottomleft",
+                colors = priceRangeColorsVec, labels = priceRangeVec,
+                title = "House Sale Price",
+                opacity = 1)
     #%>%
     #  fitBounds(-93.69, 41.98, -93.65, 42.29)
   })
@@ -405,8 +365,7 @@ server <- function(input, output) {
         clearGroup('A') %>% 
         addCircleMarkers( group = 'A',
                           lng = ~long, lat = ~lat,
-                         # color = ~priceRangeColor,
-                          color = ~Neighborhood,
+                          color = ~priceRangeColor,
                           radius = 3,  fillOpacity = 0.7, 
                           popup = popupContent(subPriceRangeAmesData()))  
     }
