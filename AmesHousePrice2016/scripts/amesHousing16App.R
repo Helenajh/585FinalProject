@@ -292,7 +292,7 @@ server <- function(input, output) {
                                              "Two and one-half story:  3rd level finished"))
   
   ames_tab2_subset <- reactive(
-    amesHousingDat %>% filter(Occupancy == input$Type, Bedrooms %in% c(input$Bedrooms), 
+    amesHousingDat %>% filter(Occupancy %in% input$Type, Bedrooms %in% c(input$Bedrooms), 
                               Area %in% c(input$Area),
                               Year.Built > input$Year[1], Year.Built < input$Year[2])
   )
@@ -300,7 +300,7 @@ server <- function(input, output) {
   output$salePriceAreaBed <- renderPlotly({
 
     ames_tab2_subset() %>%  
-      plot_ly(x = ~Sale.Price/1000, y = ~Total.Living.Area,
+      plot_ly(y = ~Sale.Price/1000, x = ~Total.Living.Area,
               # Hover text:
               text = ~paste("Sale Price: ", Sale.Price/1000,
                             'K$<br>Total Living Area:', Total.Living.Area,
