@@ -104,7 +104,7 @@ print(amesArea.xtable, include.rownames = F, comment = FALSE, table.placement = 
 ```
 After the above processing, there are 952 observations left to the following visualization. 
 
-
+\newpage
 # The Shiny App
 
 The Shiny app contains four tabs: Sales by Month, Sales Overview, House Sale History Search, and Sales vs Location.
@@ -125,12 +125,15 @@ The second graph (Figure 4) in this tab shows the relationship between Sale Pric
 have more information and do more investigation in the future.
 
 ## Tab 3: House Sale History Search
+There is the tab that users can actually do search on. There are four widgets on the left: Area gives 4 areas (there is no sales in the east part last year) of Ames, building type gives what type of houses the users may want. Also, users can specify number of bedrooms and year built of the house they desire. I intentionally chose those four widgets since Haiyang's friend are interested in them, and I believe they are also the main features any house buyer would have strong preference on. Then, the plot gives sale price in thousand dollars versus the total living area in sq ft. As shown in (Fig. \ref{fig:tab3}). 
 
+Not surprising, the bigger the total living area is, the higher the sale price was. The points are colored by the number of bedrooms and shaped by different style of house, which is also a key feature for home buyers. Since the plot is loaded with information, the various functions of plotly come handy now. For example, the users can specify certain price range and how old the house would be, and then the plot will give a very good display of how many bedrooms, what building type and style you may get. Also, the users can hover over the plots to see detailed information about the house sold. It's designed to give users an informative feel of what housing features they can get for certain price range, which will better aid them on finding their dream house. 
+ 
 
 
 ## Tab 4: Sales vs Location
 
-In this section, we were interested how the house sale price changes at different location. On overall average of sale price in story county in 2016 was \$180K - \$190K. It located near Grand Avenue, 13 street and 24 street and near Ontario street as well. We noticed that the highest house sale on average was tent to centered near the northridge heights park area in 2016 (Fig. \ref{fig:price63}). What's more, for most of those houses with high saling prices were mostly recently built (the median built year for house with saling prices greater than \$300K were 2003).  
+In this section, we were interested how the house sale price changes at different location. On overall average of sale price in story county in 2016 was \$180K - \$190K. It located near Grand Avenue, 13 street and 24 street and near Ontario street as well. We noticed that the highest house sale on average was tend to centered near the northridge heights park area in 2016 (Fig. \ref{fig:price63}). What's more, for most of those houses with high saling prices were mostly recently built (the median built year for house with saling prices greater than \$300K were 2003).  
 <!-- ## Sale time distribution   -->
 <!-- ## House type distribution  -->
 
@@ -141,17 +144,10 @@ In this section, we were interested how the house sale price changes at differen
 
 # Future Work
 
+There are many things we would like to work on when time is allowed. First of all, more data for major cities and time span. We only have one year of sales in Ames right now due to the limitations of the website. If we can access longer time span and more major cities in the US, we want to design the first page of our app to be the place the user choose the city and time they want to research. Secondly, more variables need to be included. Such as, crime rate, transportation convenience, hospital or school access. I think all these are not huge issue in Ames, but they would be for home buyers in big cities, so we want to make that available for the users. Last but not least, we will include the definition of some housing terms used in our app, for example, partial sale condition in tab 2 and building types in tab 3. Every time user hover over the legends, the definition will pop up since they may not know them well. Overall, we want to make our app more informative and user-friendly. 
 
 
-
-
-
-
-
-
-
-
-
+\newpage
 # Figures
 
 \begin{figure}[htbp]
@@ -181,6 +177,14 @@ In this section, we were interested how the house sale price changes at differen
   \caption{Sale Price by Assessed Value}
   \label{fig:asessedvalue}
 \end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[height=3in]{./figs/tab3.png}
+  \caption{Search Page for House Features}
+  \label{fig:tab3}
+\end{figure}
+
 
 \begin{figure}[htbp]
   \centering
