@@ -1,8 +1,12 @@
 ---
 title: "Final Project Report"
-output: pdf_document
+output: 
+  pdf_document:
+    fig_caption: true
+header-includes:
+   - \usepackage{float}
+ 
 ---
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, error = FALSE, 
                       message = FALSE)
@@ -11,20 +15,23 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE, error = FALSE,
 ```{r packages}
 library(xtable)
 library(tidyverse)
-library(leaflet)
 ```
+# Why Shiny App?
+
+We used Shiny app showing our results for the following 3 reasons. 
+Firstly, Shiny app is not an isolated display which you can only see one or a part of information from it. Instead, Shiny app collects a massive of data and graphs together into a single application. People can reach all these information by simple clicks. 
+They don't need to spend tons of time on web surfing. 
+Secondly, Shiny app provides interactions with users. Users can choose what they 
+would like to see in a minute. We can provide selections on color and size which 
+users may like choose by themselves. 
+Thirdly, and especially for our project, we want to create this app for searching historical housing information in Ames for potential house buyers. They can check the sale price of house sold in Ames in 2016 which matches the features of their dream house. For example, people can locate information by selecting the building type, house style, number of bedrooms, year of built and living areas of house.
+
+
 # Data description  
-## Data processing
+## Data processing and Data variable description 
 Story Country,  IA/City of Ames data was downloaded from the [Beacon website](https://beacon.schneidercorp.com/Application.aspx?AppID=165&LayerID=2145&PageTypeID=2&PageID=1279&KeyValue=0916402205) by setting `Sale Date` to be 18 month and filtering `Bedrooms` 
-from 0 upto 8 one by one. Then we processed those datasets as follows:
-
-  1. Got rid of all records before 2016 January, since we were more interested in the housing sale in 2016.
-  2. Created a new feature `house age` defined by using 2016 subtracting the year of house was built and then grouped this feature `house age`  into 13 groups. 
-  3. Add the longitudinal and latitudinal information using Google API into the data set.
-
-After the above processing, there are 952 observations left to the following visualization. 
-
-## Data variable description 
+from 0 upto 8 one by one. Table \ref{tbl:var} shows the original variables in the 
+data set downloaded from the website. 
 
 ```{r, results='asis'}
 datVar <- data.frame(Var = c("Parcel ID", "Address", "Sale Price", "Sale Date", "Sale Condition", 
@@ -52,14 +59,93 @@ datVar <- data.frame(Var = c("Parcel ID", "Address", "Sale Price", "Sale Date", 
                                and one half story: 3rd level unfinished; two and one-half story:3rd 
                                level finished; no data", "34 levels characters", "Numeric numbers"
                                ))
-datVar.xtable <- xtable(datVar, caption = "Variables description in the dataset")
+datVar.xtable <- xtable(datVar, 
+                        label = "tbl:var",
+                        table.placement = "tbph",
+                  caption = "Variables description in the raw dataset downloaded from website")
 align(datVar.xtable) <- "p{0.1\\textwidth}|p{0.25\\textwidth}|p{0.3\\textwidth}|p{0.45\\textwidth}|"
 colnames(datVar.xtable) <- c("Variables", "Description", "Range")
-print(datVar.xtable, include.rownames = F, comment = FALSE, floating = FALSE)
+print(datVar.xtable, include.rownames = F, comment = FALSE, scalebox='0.75',
+      table.placement = "H")
 ```
 
-# House Map Location
-## Sale price distribution
+Then we processed those datasets as follows:
+
+  1. Got rid of all records before 2016 January, since we were more interested in the housing sale in 2016.
+  2. Created a new feature `house age` defined by using 2016 subtracting the year of house was built and then grouped this feature `house age`  into 13 groups. 
+  3. Added the longitudinal and latitudinal information using Google API into the data set.
+  4. Broken down Ames into Five areas(North, South, West and center) based on
+  the `Neighborhood`. Table \ref{tbl:area} shows how we defined this: 
+```{r, results='asis'}
+amesArea <- data.frame(Var = c("North", "West", "South", "Center"),
+                        neigh = c("HaydnLk, Somerst, N Ames, NridgHt, StoneBr,
+                                  Blmngtn, IOCondo, Veenker, Greens, Gilbert,
+                                  NW Ames, Br'Dale, NPkVill, NoRidge",
+                                  "SawyerW, ClearCr, CollgCr, DakotaR,  Edwards,
+                                  Crawfor, WllwCr1, S&W ISU, Blueste, Sawyer,
+                                  MsCondo, Landmrk, WllwCr2",
+                                  "GrnHill, Timber, Mitchel, MeadowV",
+                                  "OldTown, IDOT&RR, BrkSide"))
+amesArea.xtable <- xtable(amesArea, 
+                          label = "tbl:area",
+                          table.placement = "tbph",
+                          caption = "Four areas with corresponding neighborhood")
+align(amesArea.xtable) <- "p{0.1\\textwidth}|p{0.25\\textwidth}|p{0.6\\textwidth}|"
+colnames(amesArea.xtable) <- c("Area", "Neighborhood")
+print(amesArea.xtable, include.rownames = F, comment = FALSE, table.placement = "H")
+```
+After the above processing, there are 952 observations left to the following visualization. 
+
+
+# The Shiny App
+
+The shiny app contains four tabs: Sales by Month, Sales Overview, House Sale History Search, and Sales vs Location.
+
+## Tab 1: Sales by Month
+
+The purpose of this tab is showing the housing trend by time. We have observations of housing sales history in Ames for the 2016 whole year. 
+
+Users are able to choose between bar chart or pie chart to display the house sale amount in each month. Also, there is a box-plot showing the house sale price range by month. From the box-plot, we can see the distributions of sale price for all twelve months are right-skewed, which indicates there are a lot large numbers (high price) appeared each month. The orange points in the middle of each box show us the trend of average house price changed by month. Seeing this average house price trend and comparing the median house price, we can conclude that the sale price of houses sold last year (2016) in Ames is not correlated with time.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[height=3in]{./figs/bar.png}
+  \caption{Sale Amount by month in 2016}
+  \label{fig:bar}
+\end{figure}
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[height=3in]{./figs/boxplot.png}
+  \caption{Price Range by month in 2016. Orange points are average price in each month}
+  \label{fig:boxplot}
+\end{figure}
+
+## Tab 2: Sales Overview
+
+This tab gives users a general idea about housing sales before going to the search functions.
+
+Users can see the relationship between Year of Built and Sale Price in the first graph. From the scatter plot below, we can see it clearly that newer houses cost more than older houses in general.
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[height=3in]{./figs/yearofbuilt.png}
+  \caption{Sale Price by Year of Built}
+  \label{fig:yearofbuilt}
+\end{figure}
+The second graph in this tab shows the relationship between Sale Price and Assessed Value. It is a strong positive linear relationship with some outliers. This means for most houses in the dataset are assessed to accurate values, while some houses assessed too low or too high. We're wondering the reason behind this. From the plots below, most outliers are with assessed value smaller than 200,000 dollars and sale price larger than 200,000 dollars. To figure out the reasons of appearance of these outliers, we assigned colors by Sale Condition and add Year of Built into the texts when users hover over to a certain point. The graph shows all the interested outliers are in Partial condition and are built in either 2015 or 2016. We guess the sale condition of house probably act an important role in house assessing. At the same time, age of house makes a lot difference on sale price. Therefore, we have these interested outliers with lower assessed value and higher sale price. We would like to 
+have more information and do more investigation in the future.
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[height=3in]{./figs/assessedvalue.png}
+  \caption{Sale Price by Assessed Value}
+  \label{fig:asessedvalue}
+\end{figure}
+
+## Tab 3: House Sale History Search
+
+
+
+## Tab 4: Sales vs Location
+
 In this section, we were interested how the house sale price changes at different 
 location. On overall average of sale price in story county in 2016 was \$180K - \$190K. It located near Grand Avenue, 13 street and 24 street and near Ontario street as well. We noticed that the highest house sale on average was tent to centered near the northridge heights park area in 2016 (Fig. \ref{fig:price63}).
 What's more, for most of those houses with high saling prices were mostly recently
