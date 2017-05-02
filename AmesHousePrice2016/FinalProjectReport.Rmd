@@ -21,13 +21,13 @@ library(tidyverse)
 
 # Motivation
 
-Real estate market is booming year by year, especially for properties in big cities or for houses in some campus towns, like Ames, Iowa. Most people buying a new house without helps from real estate agents. They would search online to see the house information, including listing price, location, house stype, etc. All the information listed online are for current housing lists, however many people would like to see historical data of real estate market in their city before they make decisions of buying a new house. 
+Real estate market is booming year by year, especially for properties in big cities or for houses in some campus towns, like Ames, Iowa. Most people buying a new house without helps from real estate agents. They would search online to see the house information, including listing price, location, house style, etc. All the information listed online are for current housing lists, however many people would like to see historical data of real estate market in their city before they make decisions of buying a new house. 
 
 Current online resources are not enough to meet people's needs. There should be a platform that people can search and learn the housing sales histories in certain cities for certain years. This project makes a Shiny app to help people meeting this goal, to build interactivities between information and app users.
 
 # Why Shiny App?
 
-We used Shiny app showing our results for the following 3 reasons. 
+We used Shiny app to show our results for the following three reasons. 
 
 Firstly, Shiny app is not an isolated display which you can only see one or a part of information from it. Instead, Shiny app collects a massive of data and graphs together into a single application. People can reach all these information by simple clicks. They don't need to spend tons of time on web surfing. 
 
@@ -38,7 +38,7 @@ Thirdly, and especially for our project, we want to create this app for searchin
 # Data description  
 ## Data processing and Data variable description 
 Story Country,  IA/City of Ames data was downloaded from the [Beacon website](https://beacon.schneidercorp.com/Application.aspx?AppID=165&LayerID=2145&PageTypeID=2&PageID=1279&KeyValue=0916402205) by setting `Sale Date` to be 18 month and filtering `Bedrooms` 
-from 0 upto 8 one by one. Table \ref{tbl:var} shows the original variables in the 
+from 0 up to 8 one by one. Table \ref{tbl:var} shows the original variables in the 
 data set downloaded from the website. 
 
 ```{r, results='asis'}
@@ -111,9 +111,9 @@ The Shiny app contains four tabs: Sales by Month, Sales Overview, House Sale His
 
 ## Tab 1: Sales by Month
 
-The purpose of this tab is showing the housing trend by time. We have observations of housing sales history in Ames for the 2016 whole year. 
+The purpose of this tab is to show the housing sales by time. We have observations of housing sales history in Ames for the 2016 whole year. 
 
-Users are able to choose between bar chart (Figure 1) or pie chart to display the house sale amount in each month. Also, there is a box-plot (Figure 2) showing the house sale price range by month. From the box-plot, we can see the distributions of sale price for all twelve months are right-skewed, which indicates there are a lot large numbers (high price) appeared each month. The orange points in the middle of each box show us the trend of average house price changed by month. Seeing this average house price trend and comparing the median house price, we can conclude that the sale price of houses sold last year (2016) in Ames is not correlated with time.
+Users are able to choose between bar chart (Figure 1) or pie chart to display the house sale amount in each month. Also, there is a box-plot (Figure 2) showing the house sale price range by month. From the box-plot, we can see the distributions of sale price for all twelve months are right-skewed, which indicates there are a lot large numbers (high price) appeared each month. The orange dot in the middle of each box shows us the average house price in each month. Seeing this average house price trend and comparing the median house price, we can conclude that the sale price of houses sold last year (2016) in Ames is not correlated with time.
 
 ## Tab 2: Sales Overview
 
@@ -121,11 +121,14 @@ This tab gives users a general idea about housing sales before going to the sear
 
 Users can see the relationship between Year of Built and Sale Price in the first graph (Figure 3). From the scatter plot below, we can see it clearly that newer houses cost more than older houses in general.
 
-The second graph (Figure 4) in this tab shows the relationship between Sale Price and Assessed Value. It is a strong positive linear relationship with some outliers. This means for most houses in the dataset are assessed to accurate values, while some houses assessed too low or too high. We're wondering the reason behind this. From the plots below, most outliers are with assessed value smaller than 200,000 dollars and sale price larger than 200,000 dollars. To figure out the reasons of appearance of these outliers, we assigned colors by Sale Condition and add Year of Built into the texts when users hover over to a certain point. The graph shows all the interested outliers are in Partial condition and are built in either 2015 or 2016. We guess the sale condition of house probably act an important role in house assessing. At the same time, age of house makes a lot difference on sale price. Therefore, we have these interested outliers with lower assessed value and higher sale price. We would like to 
-have more information and do more investigation in the future.
+The second graph (Figure 4) in this tab shows the relationship between Sale Price and Assessed Value. It is a strong positive linear relationship with some outliers. This means for most houses in the dataset are assessed to accurate values, while some houses assessed too low or too high. We're wondering the reason behind this. From the plots below, most outliers are with assessed value smaller than 200,000 dollars and sale price larger than 200,000 dollars. To figure out the reasons of appearance of these outliers, we assigned colors by Sale Condition and add Year of Built into the texts when users hover over to a certain point. The graph shows all the interested outliers are in Partial condition and are built in either 2015 or 2016. We guess the sale condition of house probably act an important role in house assessing. At the same time, age of house makes a lot difference on sale price. Therefore, we have these interesting outliers with lower assessed value and higher sale price. We would like to have more information and do more investigation in the future.
 
+\newpage
 ## Tab 3: House Sale History Search
-There is the tab that users can actually do search on. There are four widgets on the left: Area gives 4 areas (there is no sales in the east part last year) of Ames, building type gives what type of houses the users may want. Also, users can specify number of bedrooms and year built of the house they desire. I intentionally chose those four widgets since Haiyang's friend are interested in them, and I believe they are also the main features any house buyer would have strong preference on. Then, the plot gives sale price in thousand dollars versus the total living area in sq ft. As shown in (Figure \ref{fig:tab3}). 
+
+There is the tab that users can actually do search on. 
+
+There are four widgets on the left: Area gives 4 areas (there is no sales in the east part last year) of Ames, building type gives what type of houses the users may want. Also, users can specify number of bedrooms and year built of the house they desire. We intentionally chose those four widgets since we have a friend who is buying house is interested in them, and we believe they are also the main features any house buyer would have strong preference on. Then, the plot gives sale price in thousand dollars versus the total living area in sq ft. As shown in (Figure \ref{fig:tab3}). 
 
 Not surprising, the bigger the total living area is, the higher the sale price was. The points are colored by the number of bedrooms and shaped by different style of house, which is also a key feature for home buyers. Since the plot is loaded with information, the various functions of plotly come handy now. For example, the users can specify certain price range and how old the house would be, and then the plot will give a very good display of how many bedrooms, what building type and style you may get. Also, the users can hover over the plots to see detailed information about the house sold. It's designed to give users an informative feel of what housing features they can get for certain price range, which will better aid them on finding their dream house. 
  
@@ -133,7 +136,9 @@ Not surprising, the bigger the total living area is, the higher the sale price w
 
 ## Tab 4: Sales vs Location
 
-In this section, we were interested how the house sale price changes at different location. On overall average of sale price in story county in 2016 was \$180K - \$190K. It located near Grand Avenue, 13 street and 24 street and near Ontario street as well. We noticed that the highest house sale on average was tend to centered near the northridge heights park area in 2016 (Figure \ref{fig:price63}). What's more, for most of those houses with high saling prices were mostly recently built (the median built year for house with saling prices greater than \$300K were 2003).  
+In this section, we were interested in how the house sale price changes at different locations. 
+
+Overall, average sale price in story county of year 2016 was \$180K - \$190K. Houses with average sale price are mostly located near Grand Avenue, 13 street and 24 street and near Ontario street. We noticed that the highest house sales on average were tend to centered near the northridge heights park area in 2016 (Figure \ref{fig:price63}). What's more, for most houses with higher sale price were recently built (the median built year for house with sale price greater than \$300K were 2003).  
 <!-- ## Sale time distribution   -->
 <!-- ## House type distribution  -->
 
@@ -142,9 +147,18 @@ In this section, we were interested how the house sale price changes at differen
 * Open `AmesHousePrice2016.Rproj`
 * Open the shiny app file in scripts folder called `amesHousing16App.R`
 
+\newpage
 # Future Work
 
-There are many things we would like to work on when time is allowed. First of all, more data for major cities and time span. We only have one year of sales in Ames right now due to the limitations of the website. If we can access longer time span and more major cities in the US, we want to design the first page of our app to be the place the user choose the city and time they want to research. Secondly, more variables need to be included. Such as, crime rate, transportation convenience, hospital or school access. I think all these are not huge issue in Ames, but they would be for home buyers in big cities, so we want to make that available for the users. Last but not least, we will include the definition of some housing terms used in our app, for example, partial sale condition in tab 2 and building types in tab 3. Every time user hover over the legends, the definition will pop up since they may not know them well. Overall, we want to make our app more informative and user-friendly. 
+There are many things we would like to work on when time is allowed. 
+
+First of all, more data for major cities and a longer time span. We only have one year of sales in Ames right now due to the limitations of the website. If we can access a longer time span and more major cities in the U.S., we want to design the first page of our app to be the place the user choose the city and time they want to research on. 
+
+Secondly, more variables need to be included. Such as, crime rate, transportation convenience, hospital or school access. I think all these are not huge issue in Ames, but they would be for home buyers in big cities, so we want to make that available for the users. 
+
+Last but not least, we will include the definitions of some housing terms used in our app, for example, partial sale condition in tab 2 and building types in tab 3. Every time user hover over the legends, the definitions will pop up since they may not know them well.
+
+Overall, we want to make our app more informative and user-friendly. 
 
 
 \newpage
